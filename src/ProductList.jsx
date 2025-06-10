@@ -1,12 +1,15 @@
-//jjj
 import React, { useState, useEffect } from 'react';
 import { useDispatch,useSelector} from 'react-redux';
 import './ProductList.css'
 import CartItem from './CartItem';
 import { addItem } from './CartSlice';
 function ProductList({ onHomeClick }) {
+    
+    const dispatch = useDispatch();  // Initialize dispatch
+    const cartItems = useSelector((state) => state.cart.items);//12:27pm
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
+    const [addedToCart, setAddedToCart] = useState({});
 
     const plantsArray = [
         {
@@ -215,7 +218,7 @@ function ProductList({ onHomeClick }) {
             ]
         }
     ];
-    const styleObj = {
+    const styleObj={
         backgroundColor: '#4CAF50',
         color: '#fff!important',
         padding: '15px',
@@ -224,18 +227,27 @@ function ProductList({ onHomeClick }) {
         alignIems: 'center',
         fontSize: '20px',
     }
-    const styleObjUl = {
+    const styleObjUl={
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         width: '1100px',
     }
-    const styleA = {
+    const styleA={
         color: 'white',
         fontSize: '30px',
         textDecoration: 'none',
     }
 
+    const handleAddToCart = (product) => {
+        dispatch(addItem(product)); // Dispatch the action to add the product to the cart (Redux action)
+        setAddedToCart((prevState) => ({ // Update the local state to reflect that the product has been added
+          ...prevState, // Spread the previous state to retain existing entries
+          [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
+        }));
+      }; 
+    
+    
     const handleHomeClick = (e) => {
         e.preventDefault();
         onHomeClick();
@@ -255,8 +267,8 @@ function ProductList({ onHomeClick }) {
         e.preventDefault();
         setShowCart(false);
     };
+    
 
-    const cartItems = useSelector((state) => state.cart.items);
     const calculateTotalQuantity = () => {
             return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
         };
@@ -267,14 +279,6 @@ function ProductList({ onHomeClick }) {
         setTotalQuantity(calculateTotalQuantity());
     }, [cartItems]);
 
-    const handleAddToCart = (product) => {
-        dispatch(addItem(product)); // Dispatch the action to add the product to the cart (Redux action)
-        
-        setAddedToCart((prevState) => ({ // Update the local state to reflect that the product has been added
-          ...prevState, // Spread the previous state to retain existing entries
-          [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
-        }));
-      };
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -341,7 +345,7 @@ function ProductList({ onHomeClick }) {
 
 
                 </div>
-            ) : (
+            ) :  (
                 <CartItem onContinueShopping={handleContinueShopping} />
             )}
         </div>
