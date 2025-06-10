@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch,useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './ProductList.css'
 import CartItem from './CartItem';
 import { addItem } from './CartSlice';
-function ProductList({ onHomeClick }) {
+
+
+function ProductList() {
     
-    const dispatch = useDispatch();  // Initialize dispatch
-    const cartItems = useSelector((state) => state.cart.items);//12:27pm
+    const dispatch = useDispatch();  
     const [showCart, setShowCart] = useState(false);
-    const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
+    const [showPlants, setShowPlants] = useState(false); 
     const [addedToCart, setAddedToCart] = useState({});
+    const [isDisabled, setIsDisabled] = useState(false);    
 
     const plantsArray = [
         {
@@ -105,7 +107,7 @@ function ProductList({ onHomeClick }) {
                 },
                 {
                     name: "Marigold",
-                    image:"https://cdn.pixabay.com/photo/2022/02/22/05/45/marigold-7028063_1280.jpg",
+                    image: "https://cdn.pixabay.com/photo/2022/02/22/05/45/marigold-7028063_1280.jpg",
                     description: "Natural insect repellent, also adds color to the garden.",
                     cost: "$8"
                 },
@@ -218,7 +220,7 @@ function ProductList({ onHomeClick }) {
             ]
         }
     ];
-    const styleObj={
+    const styleObj = {
         backgroundColor: '#4CAF50',
         color: '#fff!important',
         padding: '15px',
@@ -227,26 +229,36 @@ function ProductList({ onHomeClick }) {
         alignIems: 'center',
         fontSize: '20px',
     }
-    const styleObjUl={
+    const styleObjUl = {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         width: '1100px',
     }
-    const styleA={
+    const styleA = {
         color: 'white',
         fontSize: '30px',
         textDecoration: 'none',
     }
 
-    const handleAddToCart = (product) => {
-        dispatch(addItem(product)); // Dispatch the action to add the product to the cart (Redux action)
-        setAddedToCart((prevState) => ({ // Update the local state to reflect that the product has been added
-          ...prevState, // Spread the previous state to retain existing entries
-          [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
-        }));
-      }; 
-    
+    const cartItems = useSelector((state) => state.cart.items);
+    const calculateTotalQuantity = () => {
+        return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
+    };
+
+// State to hold total quantity of items in cart
+    const [totalQuantity, setTotalQuantity] = useState(calculateTotalQuantity());
+    useEffect(() => {
+        // Update total quantity whenever cartItems change
+        setTotalQuantity(calculateTotalQuantity());
+        // Update addedToCart state based on cart items
+        const updatedAddedToCart = {};
+        cartItems.forEach(item => {
+            updatedAddedToCart[item.name] = true;
+        });
+        setAddedToCart(updatedAddedToCart);
+
+    }, [cartItems]);
     
     const handleHomeClick = (e) => {
         e.preventDefault();
@@ -268,16 +280,14 @@ function ProductList({ onHomeClick }) {
         setShowCart(false);
     };
     
-
-    const calculateTotalQuantity = () => {
-            return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
-        };
+    const handleAddToCart = (product) => {
+        dispatch(addItem(product));
+        setAddedToCart((prevState) => ({ 
+          ...prevState, 
+          [product.name]: true, 
+        }));
+      }; 
     
-    // State to hold total quantity of items in cart
-    const [totalQuantity, setTotalQuantity] = useState(calculateTotalQuantity());
-    useEffect(() => {
-        setTotalQuantity(calculateTotalQuantity());
-    }, [cartItems]);
 
     return (
         <div>
@@ -285,7 +295,7 @@ function ProductList({ onHomeClick }) {
                 <div className="tag">
                     <div className="luxury">
                         <img src="https://cdn.pixabay.com/photo/2020/08/05/13/12/eco-5465432_1280.png" alt="" />
-                        <a href="https://joshjanoe.github.io/e-plantShopping/" onClick={(e) => handleHomeClick(e)}>
+                        <a href="/" onClick={(e) => handleHomeClick(e)}>
                             <div>
                                 <h3 style={{ color: 'white' }}>Paradise Nursery</h3>
                                 <i style={{ color: 'white' }}>Where Green Meets Serenity</i>
@@ -297,7 +307,7 @@ function ProductList({ onHomeClick }) {
                 <div style={styleObjUl}>
                     <div> <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>Plants</a></div>
                     <div> 
-                        <a href="#" onClick={(e) => handleCartClick(e)}>
+                        <a href="/cart" onClick={(e) => handleCartClick(e)}>
                             <h1 className='cart'>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68">
                                     <rect width="156" height="156" fill="none"></rect>
@@ -313,28 +323,23 @@ function ProductList({ onHomeClick }) {
             </div>
             {!showCart ? (
                 <div className="product-grid">
-                    {plantsArray.map((category, index) => ( // Loop through each category in plantsArray
-                        <div key={index}> {/* Unique key for each category div */}
+                    {plantsArray.map((category, index) => ( 
+                        <div key={index}>
                             <h1>
-                            <div>{category.category}</div> {/* Display the category name */}
+                                <div>{category.category}</div>
                             </h1>
-                            <div className="product-list"> {/* Container for the list of plant cards */}
-                            {category.plants.map((plant, plantIndex) => ( // Loop through each plant in the current category
-                                <div className="product-card" key={plantIndex}> {/* Unique key for each plant card */}
-                                <img 
-                                    className="product-image" 
-                                    src={plant.image} // Display the plant image
-                                    alt={plant.name} // Alt text for accessibility
-                                />
-                                <div className="product-title">{plant.name}</div> {/* Display plant name */}
-                                {/* Display other plant details like description and cost */}
-                                <div className="product-description">{plant.description}</div> {/* Display plant description */}
-                                <div className="product-cost">${plant.cost}</div> {/* Display plant cost */}
+                            <div className="product-list">
+                            {category.plants.map((plant, plantIndex) => ( 
+                                <div className="product-card" key={plantIndex}>
+                                <img className="product-image" src={plant.image} alt={plant.name} />
+                                <div className="product-title">{plant.name}</div> 
+                                <div className="product-description">{plant.description}</div>
+                                <div className="product-cost">{plant.cost}</div>
                                 <button
                                     className={`product-button ${addedToCart[plant.name] ? 'added-to-cart' : ''}`}
                                     onClick={() => handleAddToCart(plant)}
                                     disabled={addedToCart[plant.name]}
-                                >
+                                    >
                                     {addedToCart[plant.name] ? "Added to Cart" : "Add to Cart"}
                                 </button>
                                 </div>
@@ -345,7 +350,7 @@ function ProductList({ onHomeClick }) {
 
 
                 </div>
-            ) :  (
+            ) : (
                 <CartItem onContinueShopping={handleContinueShopping} />
             )}
         </div>

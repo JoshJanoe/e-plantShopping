@@ -14,10 +14,10 @@ const CartItem = ({ onContinueShopping }) => {
             total += parseFloat(item.cost.substring(1)) * item.quantity;
         });
         return total;
-    }
+    };
 
   const handleContinueShopping = (e) => {
-        onContinueShopping(e)
+        onContinueShopping(e);
   };
 
   const handleIncrement = (item) => {
