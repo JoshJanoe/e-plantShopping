@@ -263,6 +263,8 @@ function ProductList() {
     const handleHomeClick = (e) => {
         e.preventDefault();
         onHomeClick();
+        setShowCart(false);
+        setShowPlants(false);
     };
 
     const handleCartClick = (e) => {
@@ -302,10 +304,38 @@ function ProductList() {
                             </div>
                         </a>
                     </div>
-
                 </div>
+
+                <div className="tag">
+                    <div className="nav">
+                        <a href="/" onClick={(e) => handleHomeClick(e)}>
+                            <div>
+                                <h3 style={{ color: 'white' }}>Home</h3>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div className="tag">
+                    <div className="nav">
+                        <a href="/" onClick={(e) => handlePlantsClick(e)}>
+                            <div>
+                                <h3 style={{ color: 'white' }}>Plants</h3>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div className="tag">
+                    <div className="nav">
+                        <a href="/" onClick={(e) => handleCartClick(e)}>
+                            <div>
+                                <h3 style={{ color: 'white' }}>Cart</h3>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
                 <div style={styleObjUl}>
-                    <div> <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>Plants</a></div>
+                    <div> <a href="/plants" onClick={(e) => handlePlantsClick(e)} style={styleA}>Plants</a></div>
                     <div> 
                         <a href="/cart" onClick={(e) => handleCartClick(e)}>
                             <h1 className='cart'>
